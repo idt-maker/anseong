@@ -14,7 +14,7 @@
             <form id="video-form">
                 <select name="video_file" id="video-file">
                     <?php
-                        $videos_dir = 'videos/';
+                        $videos_dir = 'data/';
                         $videos = glob($videos_dir . '*.{mp4,avi,mov,mkv}', GLOB_BRACE);
                         foreach ($videos as $video) {
                             echo '<option value="' . $video . '">' . basename($video) . '</option>';
@@ -66,7 +66,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ x: x / (rect.width / 1280), y: y / (rect.height / 480) })
+                body: JSON.stringify({ x: x / (rect.width / 1280), y: y / (rect.height / 960) })
             });
         });
 
