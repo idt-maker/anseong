@@ -50,10 +50,28 @@
                 body: formData
             });
 
-            // Wait for the stream to be ready
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            videoStream.src = `http://${window.location.hostname}:8080/video_feed`;
+            // Poll for the stream to be ready
+            const streamUrl = `http://${window.location.hostname}:8080/video_feed`;
+            const waitForStream = async () => {
+                console.log("Waiting for stream to be ready...");
+                while (true) {
+                    try {
+                        // Use fetch with a timeout. A successful (even if opaque) response
+                        // means the server is up.
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 1000);
+                        await fetch(streamUrl, { mode: 'no-cors', signal: controller.signal });
+                        clearTimeout(timeoutId);
+                        console.log("Stream is ready!");
+                        return;
+                    } catch (error) {
+                        // Server not ready yet, wait and retry
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+                }
+            };
+            await waitForStream();
+            videoStream.src = streamUrl;
         });
 
         videoStream.addEventListener('click', (e) => {
